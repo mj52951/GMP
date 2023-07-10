@@ -2,11 +2,31 @@ import hre from 'hardhat';
 
 export const getContractInstance = async (name: string, address: string) => {
     return await hre.ethers.getContractAt(name, address);
-  } 
+}
 
-export  const toHex = (covertThis: any, padding: any) => {
-      return hre.ethers.utils.hexZeroPad(hre.ethers.utils.hexlify(covertThis), padding);
-  };
+export const  convertToHex = (str: string) => {
+  var hex: string = '';
+  for(var i=0;i<str.length;i++) {
+      hex += ''+str.charCodeAt(i).toString(16);
+  }
+  return hex;
+}
+
+
+export const getHexStringLength = (s: string) => {
+  return "0x"+s.substring(2).length / 2; 
+}
+
+export const checkHexLength = (hexString: string) => {
+  if (hexString.length == 3){
+    hexString = "0x0" + hexString.substring(2); 
+  }
+  return hexString;
+}
+
+export const toHex = (covertThis: any, padding: any) => {
+      return hre.ethers.zeroPadValue(hre.ethers.hexlify(covertThis), padding);
+};
   
 export const createPermissionlessGenericDepositData = (
       executeFunctionSignature: string,
@@ -14,40 +34,23 @@ export const createPermissionlessGenericDepositData = (
       maxFee: string,
       depositor: string,
       executionData: string,
-      depositorCheck = true
+      depositorCheck = false
     ) => {
       if (depositorCheck) {
         // if "depositorCheck" is true -> append depositor address for destination chain check
         executionData = executionData.concat(toHex(depositor, 32).substring(2));
       }
-      console.log(executionData)
-  
-      /*var a = toHex(maxFee, 32).substring(2); 
-      var b = toHex(executeFunctionSignature.substring(2).length / 2, 2).substring(2)
-      var c = executeFunctionSignature.substring(2)
-      var d = toHex(executeContractAddress.substring(2).length / 2, 1).substring(2)
-      var e = executeContractAddress.substring(2)  // bytes
-      var f = toHex(depositor.substring(2).length / 2, 1).substring(2);// uint8
-      var g = depositor.substring(2) // bytes
-      var h = executionData.substring(2)
-      console.log(a)
-      console.log(b)
-      console.log(c)
-      console.log(d)
-      console.log(e)
-      console.log(f)
-      console.log(g)
-      console.log(h)
-      console.log("\n")*/
-  
+      //var a : string = checkHexLength(getHexStringLength(executeFunctionSignature)).substring(2); // uint16
+      executionData = "0x" + convertToHex(executionData); 
+
       return (
         "0x" +
         toHex(maxFee, 32).substring(2) + // uint256
-        toHex(executeFunctionSignature.substring(2).length / 2, 2).substring(2) + // uint16
+        checkHexLength(getHexStringLength(executeFunctionSignature)).substring(2) + // uint16
         executeFunctionSignature.substring(2) + // bytes
-        toHex(executeContractAddress.substring(2).length / 2, 1).substring(2) + // uint8
+        checkHexLength(getHexStringLength(executeContractAddress)).substring(2) + // uint8
         executeContractAddress.substring(2) + // bytes
-        toHex(depositor.substring(2).length / 2, 1).substring(2) + // uint8
+        checkHexLength(getHexStringLength(depositor)).substring(2) + // uint8
         depositor.substring(2) + // bytes
         executionData.substring(2)
       ) // bytes
