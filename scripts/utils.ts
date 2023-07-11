@@ -12,7 +12,6 @@ export const  convertToHex = (str: string) => {
   return hex;
 }
 
-
 export const getHexStringLength = (s: string) => {
   return "0x"+s.substring(2).length / 2; 
 }
@@ -41,19 +40,23 @@ export const createPermissionlessGenericDepositData = (
         executionData = executionData.concat(toHex(depositor, 32).substring(2));
       }
       //var a : string = checkHexLength(getHexStringLength(executeFunctionSignature)).substring(2); // uint16
-      executionData = "0x" + convertToHex(executionData); 
+      executionData = "0x" + convertToHex(executionData);
 
       return (
         "0x" +
         toHex(maxFee, 32).substring(2) + // uint256
-        checkHexLength(getHexStringLength(executeFunctionSignature)).substring(2) + // uint16
-        executeFunctionSignature.substring(2) + // bytes
-        checkHexLength(getHexStringLength(executeContractAddress)).substring(2) + // uint8
+        toHex(checkHexLength(getHexStringLength(executeFunctionSignature)),2).substring(2) + // uint16
+        executeFunctionSignature.substring(2) +
+        toHex(checkHexLength(getHexStringLength(executeContractAddress)),1).substring(2) + // uint8
         executeContractAddress.substring(2) + // bytes
-        checkHexLength(getHexStringLength(depositor)).substring(2) + // uint8
+        toHex(checkHexLength(getHexStringLength(depositor)),1).substring(2) + // uint8
         depositor.substring(2) + // bytes
         executionData.substring(2)
       ) // bytes
         .toLowerCase();
+    };
+
+export const createResourceID = (contractAddress: string, domainID:string) => {
+      return toHex(contractAddress + toHex(domainID, 1).substring(2), 32);
     };
   
