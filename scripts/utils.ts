@@ -12,8 +12,8 @@ export const  convertToHex = (str: string) => {
   return hex;
 }
 
-export const getHexStringLength = (s: string) => {
-  return "0x"+s.substring(2).length / 2; 
+export const getHexStringLength = (str: string) => {
+  return "0x"+str.substring(2).length / 2; 
 }
 
 export const checkHexLength = (hexString: string) => {
