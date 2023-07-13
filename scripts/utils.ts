@@ -35,12 +35,13 @@ export const createPermissionlessGenericDepositData = (
       executionData: string,
       depositorCheck = false
     ) => {
+      executionData = convertToHex(executionData);
       if (depositorCheck) {
         // if "depositorCheck" is true -> append depositor address for destination chain check
-        executionData = executionData.concat(toHex(depositor, 32).substring(2));
-      }
+        executionData = toHex(depositor, 32).substring(2) + executionData;
+      } 
+      executionData = "0x" + executionData; 
       //var a : string = checkHexLength(getHexStringLength(executeFunctionSignature)).substring(2); // uint16
-      executionData = "0x" + convertToHex(executionData);
 
       return (
         "0x" +
